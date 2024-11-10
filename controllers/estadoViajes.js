@@ -1,6 +1,6 @@
 const { response } = require('express');
 const Driver = require('../models/driver');
-const Address = require('../models/ubicacion');
+const Address = require('../models/orders');
 const mongoose = require('mongoose');
 
 const statusDriverDisconnect = async(req = request, res = response) => {          

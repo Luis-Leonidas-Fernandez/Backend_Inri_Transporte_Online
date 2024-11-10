@@ -1,6 +1,6 @@
 const { Schema, model } = require('mongoose');
 
-const AddressSchema = Schema({
+const OrderSchema = Schema({
 
     miId: {
         type: Schema.Types.ObjectId,
@@ -34,7 +34,7 @@ const AddressSchema = Schema({
         
    },
 
-    mensaje: {
+    driverLocation: {
 
         type:{
             type: String,            
@@ -55,9 +55,9 @@ const AddressSchema = Schema({
     timestamps: true
 });
 
-AddressSchema.method('toJSON', function() {
+OrderSchema.method('toJSON', function() {
     const { __v, ...object } = this.toObject();    
     return object;
 })
 
-module.exports = model('Address', AddressSchema);
+module.exports = model('Order', OrderSchema);

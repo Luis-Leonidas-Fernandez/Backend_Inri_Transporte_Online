@@ -1,6 +1,6 @@
 const { response } = require('express');
 const { buscarZonaCercanaPost } = require('../middlewares/buscar-zona');
-const Address=  require('../models/ubicacion');
+const Address=  require('../models/orders');
 const Usuario = require('../models/usuario');
 const Driver = require('../models/driver');
 
@@ -33,7 +33,7 @@ const postUbicacion = async(req, res = response) => {
         const dist = await buscarZonaCercanaPost(ubicacion);      
         
        
-        if(dist <= 2000){           
+        if(dist <= 2000){
            
             const address = new Address(imput);         
        

@@ -8,7 +8,7 @@ const selectDriver = async ( req, res = response ) => {
 
     const drivers = await Driver.find({ $and: [{ _id: { $ne: req.uid }}, {online: true},{order: 'libre'}]})
         .sort({online: 'desc', order: -1, viajes: 1})
-        .limit(20)        
+        .limit(20)
        
         const len = drivers.length;    
         
