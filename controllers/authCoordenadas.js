@@ -1,6 +1,6 @@
 const { response } = require('express');
 const { buscarZonaCercanaPost } = require('../middlewares/buscar-zona');
-const Address=  require('../models/orders');
+const Order=  require('../models/orders');
 const Usuario = require('../models/usuario');
 const Driver = require('../models/driver');
 
@@ -35,9 +35,9 @@ const postUbicacion = async(req, res = response) => {
        
         if(dist <= 2000){
            
-            const address = new Address(imput);         
+            const order = new Order(imput);         
        
-            const result = await address.save();
+            const result = await order.save();
             const coords = result.mensaje.coordinates;
             const points =  coords[coords.length -1];
             const types = result.mensaje.type;
@@ -75,17 +75,17 @@ const postUbicacion = async(req, res = response) => {
     }
 }
 
-const removeAddress = async(req = request, res = response) => {   
+const removeOrder = async(req = request, res = response) => {   
            
     const {order, miId,  } = req.body;    
        
    try {
     
     
-      const UserAddress = await Address.findOneAndUpdate({miId: miId}, {$unset: {miId: "", estado: ""}});                          
+      const UserOrder = await Order.findOneAndUpdate({miId: miId}, {$unset: {miId: "", estado: ""}});                          
      
 
-       if (!UserAddress){
+       if (!UserOrder){
         return res.status(400).json({
            ok: false,
            msg: 'El pedido no puede ser cancelado'
@@ -93,9 +93,9 @@ const removeAddress = async(req = request, res = response) => {
      } 
      
      
-     const idDriver = UserAddress.idDriver;        
+     const idDriver = UserOrder.idDriver;        
 
-        await Address.findOneAndUpdate({idDriver: idDriver}, {$unset:{idDriver: ""}});
+        await Order.findOneAndUpdate({idDriver: idDriver}, {$unset:{idDriver: ""}});
         await Driver.findOneAndUpdate({_id: idDriver},
              {$set: 
                 { order: order,
@@ -106,7 +106,7 @@ const removeAddress = async(req = request, res = response) => {
       
 
        const data = {
-           UserAddress,                
+        UserOrder,                
        } 
                        
        res.json({
@@ -131,16 +131,16 @@ const finishTravelUser = async(req, res = response) => {
  
      try {
  
-        const UserAddress = await Address.findOneAndUpdate({idDriver: idDriver},{ $unset: { idDriver: "" }} );
+        const UserOrder = await Order.findOneAndUpdate({idDriver: idDriver},{ $unset: { idDriver: "" }} );
                             await Driver.findOneAndUpdate({_id: idDriver}, {$set: { order: order,  upsert: true }} );                       
-       if (!UserAddress){
+       if (!UserOrder){
         return res.status(400).json({
            ok: false,
            msg: 'El conductor no puede ser eliminado'
        });
      }   
      const data = {
-        UserAddress,                
+        UserOrder,                
     } 
  
          res.json({            
@@ -163,10 +163,10 @@ const getUbicaciones = async(req, res = response) => {
     
     try {
 
-        const addresses = await Address.find({ $and: [{ _id: { $ne: req._id }}, {estado: true}]})
+        const orders = await Order.find({ $and: [{ _id: { $ne: req._id }}, {estado: true}]})
         .sort({createdAt: 'asc'})
         
-        if (!addresses) {
+        if (!orders) {
             return res.status(404).json({
                 ok: false,
                 msg: 'las ordenes no puede ser halladas'
@@ -176,7 +176,7 @@ const getUbicaciones = async(req, res = response) => {
 
         res.json({            
             
-            addresses
+            orders
 
         });
 
@@ -195,7 +195,7 @@ const getUbicacionesAutomatic = async(res= response ) => {
         const idOrderNull =  [{miId: "1"}];
     try {
 
-        const data = await Address.find({ $and: [{ _id: { $ne: idAdmin }}, {estado: true}]})
+        const data = await Order.find({ $and: [{ _id: { $ne: idAdmin }}, {estado: true}]})
         .sort({createdAt: 'asc'})
         .limit(20)       
         
@@ -250,7 +250,7 @@ module.exports = {
     postUbicacion,
     getUbicaciones,
     finishTravelUser,
-    removeAddress,
+    removeOrder,
     getUbicacionesAutomatic
 }
 
