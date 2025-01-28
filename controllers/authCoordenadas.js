@@ -1,8 +1,8 @@
 import { response } from "express";
-import { buscarZonaCercanaPost } from "../middlewares/buscar-zona";
-import Address from "../models/ubicacion";
-import Usuario from "../models/usuario";
-import Driver from "../models/driver";
+import { buscarZonaCercanaPost } from "../middlewares/buscar-zona.js";
+import Address from "../models/ubicacion.js";
+import Usuario from "../models/usuario.js";
+import Driver from "../models/driver.js";
 
 export const postUbicacion = async (req, res = response) => {
   const { miId, estado, ubicacion } = req.body;

@@ -1,6 +1,6 @@
 import { response } from "express";
-import Usuario from "../models/usuario";
-import { generateVaucher } from "../Generators/cupon";
+import Usuario from "../models/usuario.js";
+import { generateVaucher } from "../Generators/cupon.js";
 
 export const getActiveUsers = async () => {
   const { id } = "64d7d5fe08b40f10d3d53bf9";

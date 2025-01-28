@@ -2,18 +2,22 @@
     path: api/drivers
 
 */
-const { Router } = require('express');
-const { validarJWT } = require('../middlewares/validar-jwt');
+import { Router } from "express";
+import { validarJWT } from "../middlewares/validar-jwt.js";
 
-const { selectDriver } = require('../controllers/drivers');
-const { obtenerViajeDriver } = require('../controllers/viajeDriver');
-const { statusDriverArrived, statusDriverDisconnect} = require('../controllers/estadoViajes');
+import { selectDriver } from "../controllers/drivers.js";
+import { obtenerViajeDriver } from "../controllers/viajeDriver.js";
+import {
+  statusDriverArrived,
+  statusDriverDisconnect,
+} from "../controllers/estadoViajes.js";
 const router = Router();
 
 //ALL DRIVERS AVAILABLE
-router.get('/', selectDriver, );
+router.get("/", selectDriver);
 //DRIVER RECEIVES AN INCOMING ORDER
-router.get('/:_id', validarJWT, obtenerViajeDriver );
-router.put('/arrived', validarJWT, statusDriverArrived );
-router.put('/disconnect', validarJWT, statusDriverDisconnect);
-module.exports = router;
+router.get("/:_id", validarJWT, obtenerViajeDriver);
+router.put("/arrived", validarJWT, statusDriverArrived);
+router.put("/disconnect", validarJWT, statusDriverDisconnect);
+
+export default router;

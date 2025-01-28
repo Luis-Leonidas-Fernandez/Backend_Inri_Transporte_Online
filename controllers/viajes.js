@@ -1,5 +1,5 @@
 import { response } from "express";
-import Address from "../models/ubicacion";
+import Address from "../models/ubicacion.js";
 import { ObjectId } from "mongodb";
 
 export const obtenerViajeUsuario = async (req, res = response) => {

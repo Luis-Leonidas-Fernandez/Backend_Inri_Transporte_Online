@@ -1,7 +1,7 @@
 import { response } from "express";
 import bcrypt from "bcryptjs";
-import Driver from "../models/driver";
-import { generarJWT } from "../helpers/jwt";
+import Driver from "../models/driver.js";
+import { generarJWT } from "../helpers/jwt.js";
 import {
   urlMapboxKey,
   tokenMapBoxKey,

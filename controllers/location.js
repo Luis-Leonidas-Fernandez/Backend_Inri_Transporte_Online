@@ -1,4 +1,4 @@
-import Address from "../models/ubicacion";
+import Address from "../models/ubicacion.js";
 
 export const grabarLocation = async (location) => {
   const lat = location.mensaje.coordinates[0];

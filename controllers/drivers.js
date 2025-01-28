@@ -1,5 +1,5 @@
 import { response } from "express";
-import Driver from "../models/driver";
+import Driver from "../models/driver.js";
 
 export const selectDriver = async (req, res = response) => {
   const idDriverNull = [{ idDriver: "1" }];

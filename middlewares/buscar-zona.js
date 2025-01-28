@@ -1,90 +1,53 @@
-const { redondearNumber } = require('../helpers/redondear');
-const zonaRepository = require('../respositories/zona_respository');
+import { redondearNumber } from "../helpers/redondear.js";
+import zonaRepository from "../respositories/zona_respository.js";
 
+export const buscarZonas = async () => {
+  // validar si existen zonas
+  const zonas = await zonaRepository.findAll();
 
-const buscarZonas = async () =>  {  
-   
-        
-        // validar si existen zonas
-        const zonas = await zonaRepository.findAll(); 
-            
-        if ( !zonas ) {
-            return true;  
-        } else {
-            return false;
-        }
-               
-    
-}
+  if (!zonas) {
+    return true;
+  } else {
+    return false;
+  }
+};
 
-const buscarZonaCercanaPost= async (ubicacion) => {
+export const buscarZonaCercanaPost = async (ubicacion) => {
+  // buscar las zonas mas cercanas
+  const zonas = await zonaRepository.findZonaCercana(ubicacion);
 
-    // buscar las zonas mas cercanas
-    const zonas = await zonaRepository.findZonaCercana(ubicacion);     
-   
+  if (!zonas || zonas.length === 0) {
+    const distance = 4000;
+    return distance;
+  } else {
+    // elije la base mas cercana y redondea la distancia
+    const dist = redondearNumber(zonas);
 
-    if( !zonas || zonas.length === 0) {
+    return dist;
+  }
+};
 
-        const distance = 4000;
-        return distance;
+export const buscarZonaCercana = async (ubicacion) => {
+  // buscar las zonas mas cercanas
+  const zonas = await zonaRepository.findZonaCercana(ubicacion);
 
-    } else {        
+  if (zonas === null || zonas.length === 0 || zonas === undefined) {
+    const result = {
+      basesId: null,
+      dist: 4000,
+    };
 
-        // elije la base mas cercana y redondea la distancia
-      const dist = redondearNumber(zonas);
-     
-      return dist;
-
-    }
-
-      
-
-}
-
-
-
-const buscarZonaCercana= async (ubicacion) => {
-
-    // buscar las zonas mas cercanas
-    const zonas = await zonaRepository.findZonaCercana(ubicacion);    
-    
-    if(zonas === null || zonas.length === 0 || zonas === undefined) {
-      
-        const result = {
-            basesId: null,
-            dist: 4000
-        }
-
-        
-        return result;
-
-    } else {
-       
-      
-
-      // elije la base mas cercana y redondea la distancia
-      const dist = redondearNumber(zonas);
-      const basesIds = zonas[0].bases._id;
-    
-    
-      const result = {
-        basesIds,
-        dist: dist
-      }
-    
     return result;
+  } else {
+    // elije la base mas cercana y redondea la distancia
+    const dist = redondearNumber(zonas);
+    const basesIds = zonas[0].bases._id;
 
-    }
-     
-    
+    const result = {
+      basesIds,
+      dist: dist,
+    };
 
-}
-
-
-
-module.exports = {
-    buscarZonas,
-    buscarZonaCercana,
-    buscarZonaCercanaPost
-    
-}
+    return result;
+  }
+};

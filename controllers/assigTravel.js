@@ -1,5 +1,5 @@
 import { response } from "express";
-import Driver from "../models/driver";
+import Driver from "../models/driver.js";
 
 export const assigClient = async (req = request, res = response) => {
   const { _id } = req.params;

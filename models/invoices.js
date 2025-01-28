@@ -1,49 +1,45 @@
-const { Schema, model } = require( 'mongoose');
+import { Schema, model } from "mongoose";
 
-const InvoiceSchema = Schema({
-
-    
+const InvoiceSchema = Schema(
+  {
     adminId: {
-        type: Schema.Types.ObjectId, 
-        ref: 'Admin',      
-        required: false        
-    }, 
+      type: Schema.Types.ObjectId,
+      ref: "Admin",
+      required: false,
+    },
     viajes: {
-        
-        cantidad: {
-            type: Number,
-            required: false
-        },
-        precio: {
-            type: Number,
-            required: false
-        }
+      cantidad: {
+        type: Number,
+        required: false,
+      },
+      precio: {
+        type: Number,
+        required: false,
+      },
     },
 
     descuento: {
-        type: Number,
-        required: false
-    },   
+      type: Number,
+      required: false,
+    },
 
     soporte: {
-        type: Number,
-        required: false
-    },    
-    
-}, 
+      type: Number,
+      required: false,
+    },
+  },
 
-{
-    timestamps: true   
+  {
+    timestamps: true,
+  }
+);
 
+InvoiceSchema.method("toJSON", function () {
+  const { __v, ...object } = this.toObject();
+  object.uid = _id;
+  return object;
 });
 
-InvoiceSchema.method('toJSON', function() {
-    const { __v, ...object } = this.toObject();
-    object.uid = _id;
-    return object;
-})
+const Invoice = model("Invoice", InvoiceSchema);
 
-
-
-module.exports = model('Invoice',
-    InvoiceSchema);
+export default Invoice;

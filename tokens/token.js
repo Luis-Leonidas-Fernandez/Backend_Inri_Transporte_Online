@@ -1,16 +1,6 @@
-const { response } = require('express');
+import { response } from "express";
 
-const urlMapboxKey="";
-const tokenMapBoxKey="";
-const mapTokenKey="";
-const idMapBoxKey="";
-
-
-
-module.exports ={
-    urlMapboxKey,
-    tokenMapBoxKey,
-    idMapBoxKey,
-    mapTokenKey
-}
-
+export const urlMapboxKey = "";
+export const tokenMapBoxKey = "";
+export const mapTokenKey = "";
+export const idMapBoxKey = "";

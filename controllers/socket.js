@@ -1,5 +1,5 @@
-import Address from "../models/ubicacion";
-import Driver from "../models/driver";
+import Address from "../models/ubicacion.js";
+import Driver from "../models/driver.js";
 
 export const driverConectado = async (uid = "") => {
   const driver = await Driver.findById(uid);

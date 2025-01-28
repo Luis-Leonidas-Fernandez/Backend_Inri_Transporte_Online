@@ -2,14 +2,13 @@
     path: api/usuarios
 
 */
-const { Router } = require( 'express');
-const { validarJWT } = require( '../middlewares/validar-jwt');
+import { Router } from "express";
+import { validarJWT } from "../middlewares/validar-jwt.js";
 
-const { getUsuarios } = require( '../controllers/usuarios');
+import { getUsuarios } from "../controllers/usuarios.js";
 
 const router = Router();
 
+router.get("/", validarJWT, getUsuarios);
 
-router.get('/', validarJWT, getUsuarios );
-
-module.exports = router;
+export default router;

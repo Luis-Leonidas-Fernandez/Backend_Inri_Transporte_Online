@@ -1,71 +1,63 @@
-const { Schema, model } = require( 'mongoose');
+import { Schema, model } from "mongoose";
 
-const BaseSchema = Schema({
-
+const BaseSchema = Schema(
+  {
     base: {
-        type: Number,
-        required: false
-    },    
-    
-    ubicacion: {        
-        type:{
-            type: String,            
-            enum: ['Point'], 
-            required: true,
-        },                 
-        coordinates: {
-            type: [Number],
-            required: true,
-            index: '2dsphere'           
+      type: Number,
+      required: false,
     },
-         
-        
+
+    ubicacion: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        required: true,
+      },
+      coordinates: {
+        type: [Number],
+        required: true,
+        index: "2dsphere",
+      },
     },
-    
 
     adminId: {
-        type: Schema.Types.ObjectId, 
-        ref: 'Admin',      
-        required: false
-        
+      type: Schema.Types.ObjectId,
+      ref: "Admin",
+      required: false,
     },
 
     zonaName: {
-        type: String,           
-        required: false
-        
+      type: String,
+      required: false,
     },
-    
-    idDriver: [{
-        type: Schema.Types.ObjectId, 
-        ref: 'Driver',      
+
+    idDriver: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Driver",
         required: false,
-        default: ""
-        
-    }],       
-    
-    
+        default: "",
+      },
+    ],
+
     viajes: {
-        type: Number,
-        required: false,
-        default: 0
-    },  
-}, 
+      type: Number,
+      required: false,
+      default: 0,
+    },
+  },
 
-{
-    timestamps: true  
+  {
+    timestamps: true,
+  }
+);
 
-   
-
+BaseSchema.method("toJSON", function () {
+  const { __v, ...object } = this.toObject();
+  //object.uid = _id;
+  return object;
 });
 
-BaseSchema.method('toJSON', function() {
-    const { __v, ...object } = this.toObject();
-    //object.uid = _id;
-    return object;
-})
+const Base = model("Base", BaseSchema);
 
-
-
-module.exports = model('Base',
-    BaseSchema);
+export default Base;

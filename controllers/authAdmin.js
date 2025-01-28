@@ -1,7 +1,7 @@
 import { response } from "express";
 import bcrypt from "bcryptjs";
-import Admin from "../models/admin";
-import { generarJWT } from "../helpers/jwt";
+import Admin from "../models/admin.js";
+import { generarJWT } from "../helpers/jwt.js";
 
 export const crearAdmin = async (req, res = response) => {
   //unica funcion modificada 16/05/2023

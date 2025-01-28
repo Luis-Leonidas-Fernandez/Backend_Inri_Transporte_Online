@@ -1,10 +1,10 @@
 import { response } from "express";
-import Address from "../models/ubicacion";
-import Driver from "../models/driver";
-import { buscarZonaCercana } from "../middlewares/buscar-zona";
-import { updateStatusDriverAsing } from "../middlewares/drivers-to-base";
-import { addDriverToAddress } from "../middlewares/address";
-import { findBasesByIdsAndDrivers } from "../middlewares/buscar-base";
+import Address from "../models/ubicacion.js";
+import Driver from "../models/driver.js";
+import { buscarZonaCercana } from "../middlewares/buscar-zona.js";
+import { updateStatusDriverAsing } from "../middlewares/drivers-to-base.js";
+import { addDriverToAddress } from "../middlewares/address.js";
+import { findBasesByIdsAndDrivers } from "../middlewares/buscar-base.js";
 
 export const assigDriver = async (req = request, res = response) => {
   const miId = req.body.miId;

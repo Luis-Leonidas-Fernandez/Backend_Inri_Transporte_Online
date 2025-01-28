@@ -2,15 +2,13 @@
     path: api/location
 
 */
-const { Router } = require('express');
-const { validarJWTDRIVER } = require('../middlewares/validar-jwt-driver');
-const { locationDriverUpdate } = require('../controllers/estadoViajes');
-
-
+import { Router } from "express";
+import { validarJWTDRIVER } from "../middlewares/validar-jwt-driver.js";
+import { locationDriverUpdate } from "../controllers/estadoViajes.js";
 
 const router = Router();
 
-
 //update driver position real time
-router.put('/driver-position',validarJWTDRIVER, locationDriverUpdate);
-module.exports = router;
+router.put("/driver-position", validarJWTDRIVER, locationDriverUpdate);
+
+export default router;

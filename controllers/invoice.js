@@ -1,7 +1,7 @@
 import { response } from "express";
 import PDFDocument from "pdfkit-table";
-import Base from "../models/base";
-import Invoice from "../models/invoices";
+import Base from "../models/base.js";
+import Invoice from "../models/invoices.js";
 import axios from "axios";
 import { ObjectId } from "mongodb";
 import path from "path";

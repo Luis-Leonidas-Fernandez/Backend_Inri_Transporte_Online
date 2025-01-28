@@ -1,6 +1,6 @@
 import { response } from "express";
-import Driver from "../models/driver";
-import Address from "../models/ubicacion";
+import Driver from "../models/driver.js";
+import Address from "../models/ubicacion.js";
 
 export const statusDriverDisconnect = async (req = request, res = response) => {
   const { _id, online } = req.body;

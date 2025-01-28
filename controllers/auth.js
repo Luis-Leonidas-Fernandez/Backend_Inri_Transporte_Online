@@ -1,8 +1,8 @@
 import { response } from "express";
 import bcrypt from "bcryptjs";
 
-import Usuario from "../models/usuario";
-import { generarJWT } from "../helpers/jwt";
+import Usuario from "../models/usuario.js";
+import { generarJWT } from "../helpers/jwt.js";
 import {
   urlMapboxKey,
   tokenMapBoxKey,

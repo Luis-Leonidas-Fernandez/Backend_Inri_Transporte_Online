@@ -2,13 +2,12 @@
     path: api/travel
 
 */
-const { Router } = require('express');
-const { assigClient, removeClient } = require('../controllers/assigTravel');
+import { Router } from "express";
+import { assigClient, removeClient } from "../controllers/assigTravel.js";
 
 const router = Router();
 
+router.patch("/:_id", assigClient);
+router.put("/:_id", removeClient);
 
-router.patch('/:_id', assigClient );
-router.put('/:_id', removeClient );
-
-module.exports = router;
+export default router;

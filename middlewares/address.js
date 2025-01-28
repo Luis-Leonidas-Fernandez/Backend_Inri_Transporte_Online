@@ -1,17 +1,7 @@
-const addressRepository = require('../respositories/address_repository');
+import addressRepository from "../respositories/address_repository.js";
 
-
-const addDriverToAddress = async (id, idDriver) =>  {     
-        
-    //Buscar Una Address agrega un Conductor a la misma
-    const address = await addressRepository.findByIdAddDriver(id, idDriver); 
-    return address;   
-    
-}
-
-
-
-module.exports = {
-    addDriverToAddress
-    
-}
+export const addDriverToAddress = async (id, idDriver) => {
+  //Buscar Una Address agrega un Conductor a la misma
+  const address = await addressRepository.findByIdAddDriver(id, idDriver);
+  return address;
+};

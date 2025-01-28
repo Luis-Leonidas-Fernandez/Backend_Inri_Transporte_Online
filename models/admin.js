@@ -1,47 +1,41 @@
-const { Schema, model } = require( 'mongoose');
+import { Schema, model } from "mongoose";
 
 const AdminSchema = Schema({
+  nombre: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
 
-    nombre: {
-        type: String,
-        required: true
+  role: {
+    type: {
+      type: String,
+      enum: ["user", "driver", "admin"],
+      default: "admin",
     },
-    email: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    password: {
-        type: String,
-        required: true
-    },
-    
-    role: {
-        type: {
-            type: String,
-            enum: ['user', 'driver','admin'],
-            default: 'admin'
-        }
-         
-       },
+  },
 
-    base: {
-        type: Number,
-        required: true,
-        default: 0
-    },   
-
-   
-
+  base: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
 });
 
-AdminSchema.method('toJSON', function() {
-    const { __v, _id, password, ...object } = this.toObject();
-    object.uid = _id;
-    return object;
-})
+AdminSchema.method("toJSON", function () {
+  const { __v, _id, password, ...object } = this.toObject();
+  object.uid = _id;
+  return object;
+});
 
+const Admin = model("Admin", AdminSchema);
 
-
-module.exports = model('Admin',
-    AdminSchema);
+export default Admin;

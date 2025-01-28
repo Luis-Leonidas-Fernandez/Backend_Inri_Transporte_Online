@@ -1,4 +1,4 @@
-import Address from "../models/ubicacion";
+import Address from "../models/ubicacion.js";
 import { ObjectId } from "mongodb";
 
 export const obtenerViajeDriver = async (req, res = response) => {

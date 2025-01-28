@@ -1,9 +1,9 @@
 import { response } from "express";
-import Zona from "../models/zona";
-import Driver from "../models/driver";
-import Admin from "../models/admin";
-import Base from "../models/base";
-import baseRepository from "../respositories/base_repository";
+import Zona from "../models/zona.js";
+import Driver from "../models/driver.js";
+import Admin from "../models/admin.js";
+import Base from "../models/base.js";
+import baseRepository from "../respositories/base_repository.js";
 import { ObjectId } from "mongodb";
 
 export const addBaseDriver = async (req = request, res = response) => {

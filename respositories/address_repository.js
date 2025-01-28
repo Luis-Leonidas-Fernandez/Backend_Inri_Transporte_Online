@@ -1,15 +1,15 @@
-const Address = require('../models/ubicacion');
+import Address from "../models/ubicacion.js";
 
 class AddressRepository {
-
-  
   //Busca una Address y agrega un conductor: UPDATE METHOD
   async findByIdAddDriver(id, idDriver) {
-    
-    const result = await Address.findOneAndUpdate({miId: id },
-    {$set: { idDriver: idDriver, estado: false }}, { new: true });
-           
-    return result; 
+    const result = await Address.findOneAndUpdate(
+      { miId: id },
+      { $set: { idDriver: idDriver, estado: false } },
+      { new: true }
+    );
+
+    return result;
   }
 
   async findAll() {
@@ -28,8 +28,6 @@ class AddressRepository {
   async delete(id) {
     return Address.findByIdAndDelete(id);
   }
-
-  
 }
 
-module.exports = new AddressRepository();
+export default new AddressRepository();
