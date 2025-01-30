@@ -22,6 +22,7 @@ import viajesRoute from "./routes/viajes.js";
 import cuponRoute from "./routes/cupon.js";
 import invoiceRoute from "./routes/invoice.js";
 import { fileURLToPath } from "url";
+import cookieParser from "cookie-parser";
 
 // const { dispatchDrivers } = require("./service/dispatch_server");
 // const { getPrice } = require("./Generators/price");
@@ -41,6 +42,9 @@ const app = express();
 // Lectura y parseo del Body
 app.use(express.json());
 
+// Habilita el acceso a las cookies
+app.use(cookieParser());
+
 //Cors
 app.use(cors());
 
@@ -59,7 +63,7 @@ const publicPath = path.resolve(__dirname, "public");
 app.use(express.static(publicPath));
 
 // Mis Rutas Usuarios
-app.use("/api/login", authRoute);
+app.use("/api", authRoute);
 app.use("/api/usuarios", usuariosRoute);
 app.use("/api/ubicaciones", ubicacionesRoute);
 

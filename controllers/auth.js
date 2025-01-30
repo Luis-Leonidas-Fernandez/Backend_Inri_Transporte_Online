@@ -26,9 +26,15 @@ export const crearUsuario = async (req, res = response) => {
     // Encriptar contraseña
     const salt = bcrypt.genSaltSync();
     newusuario.password = bcrypt.hashSync(password, salt);
-    await newusuario.save();
+
+    // Guarda el nuevo usuario en la base de datos
+    const newUser = await newusuario.save();
+
+    // Almacena el id del nuevo usuario
+    const newUserId = newUser._id.toString();
+
     // Generar mi JWT
-    const token = await generarJWT(newusuario.id);
+    const token = await generarJWT(newUserId);
 
     const usuario = {
       role: newusuario.role,
@@ -42,6 +48,8 @@ export const crearUsuario = async (req, res = response) => {
       mapToken: mapTokenKey,
       cupon: newusuario.cupon,
     };
+
+    res.cookie("token", token);
 
     return res.json({
       ok: true,
@@ -88,6 +96,8 @@ export const login = async (req, res = response) => {
       mapToken: mapTokenKey,
     };
 
+    res.cookie("token", token);
+
     res.status(200).json({
       ok: true,
       usuario,
@@ -98,6 +108,16 @@ export const login = async (req, res = response) => {
       ok: false,
       msg: "Hable con el administrador",
     });
+  }
+};
+
+export const logout = async (_req, res = response) => {
+  try {
+    res.cookie("token", "", { expires: new Date(0) });
+    res.status(200).json({ message: "Sesión cerrada correctamente" });
+  } catch (error) {
+    res.status(400).json({ error: error });
+    console.error(error);
   }
 };
 

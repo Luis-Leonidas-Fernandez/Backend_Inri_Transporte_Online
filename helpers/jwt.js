@@ -6,7 +6,8 @@ export const generarJWT = (uid) => {
 
     jwt.sign(
       payload,
-      process.env.JWT_KEY,
+      // Se añadio una clave generica por si no esta configurado el .env
+      process.env.JWT_KEY || 'asdw1234',
       {
         expiresIn: "24h",
       },
