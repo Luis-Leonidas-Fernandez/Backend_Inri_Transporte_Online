@@ -22,6 +22,7 @@ import viajesRoute from "./routes/viajes.js";
 import cuponRoute from "./routes/cupon.js";
 import invoiceRoute from "./routes/invoice.js";
 import { fileURLToPath } from "url";
+import ordersRoute from "./routes/orders.js";
 import cookieParser from "cookie-parser";
 
 // const { dispatchDrivers } = require("./service/dispatch_server");
@@ -66,6 +67,9 @@ app.use(express.static(publicPath));
 app.use("/api", authRoute);
 app.use("/api/usuarios", usuariosRoute);
 app.use("/api/ubicaciones", ubicacionesRoute);
+
+// Ruta de orders
+app.use("/api", ordersRoute);
 
 // Mis Rutas Drivers
 app.use("/api/logindriver", authDriverRoute);
