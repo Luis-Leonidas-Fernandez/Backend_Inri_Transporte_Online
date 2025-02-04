@@ -1,32 +1,38 @@
-const Driver = require('../models/driver');
-const {comprobarNullDriver} = require('../helpers/test_null');
+import Driver from "../models/driver.js";
+import { comprobarNullDriver } from "../helpers/test_null.js";
 
 class DriverRepository {
-  
   //Buscar Conductores de una Base
-  
+
   async findAll(idBase) {
-    const id = idBase;  
-    
-    const drivers = await Driver.find({ $and: [{ base: id}, {online: true},{order: 'libre'}, {status: 'disponible'}]
-    }).sort({online: 'desc', order: -1, viajes: 1}).limit(20).exec()     
+    const id = idBase;
 
-   
-    const obj =  await comprobarNullDriver(drivers);       
-    
-    return obj;   
-  }  
+    const drivers = await Driver.find({
+      $and: [
+        { base: id },
+        { online: true },
+        { order: "libre" },
+        { status: "disponible" },
+      ],
+    })
+      .sort({ online: "desc", order: -1, viajes: 1 })
+      .limit(20)
+      .exec();
 
+    const obj = await comprobarNullDriver(drivers);
 
-  //Actualiza el Estatus del Conductor 
-  async findByIdUpdateStatus(idDriver, noDisponible) {
-    const resp = await Driver.findOneAndUpdate({_id: idDriver}, {$set: {status: noDisponible}}, { upsert: true });
-    return resp;  
+    return obj;
   }
 
-  
-  
-
+  //Actualiza el Estatus del Conductor
+  async findByIdUpdateStatus(idDriver, noDisponible) {
+    const resp = await Driver.findOneAndUpdate(
+      { _id: idDriver },
+      { $set: { status: noDisponible } },
+      { upsert: true }
+    );
+    return resp;
+  }
 
   async create(userData) {
     const driver = new Driver(userData);
@@ -42,4 +48,4 @@ class DriverRepository {
   }
 }
 
-module.exports = new DriverRepository();
+export default new DriverRepository();

@@ -1,13 +1,7 @@
-const redondearNumber = (distancia) => {
+export const redondearNumber = (distancia) => {
+  const res = distancia[0].dist.calculated;
 
-    const  res = distancia[0].dist.calculated;
+  const result = Math.round(res);
 
-    
-    const result = Math.round(res);
-    
-    return result;
-}
-
-module.exports = {
-    redondearNumber
-}
+  return result;
+};

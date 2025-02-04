@@ -1,45 +1,34 @@
-const Address = require('../models/ubicacion');
-const Driver = require( '../models/driver');
+import Address from "../models/ubicacion.js";
+import Driver from "../models/driver.js";
 
+export const driverConectado = async (uid = "") => {
+  const driver = await Driver.findById(uid);
+  driver.online = true;
+  driver.status = "disponible";
+  driver.order = "libre";
+  await driver.save();
+  return driver;
+};
 
-const driverConectado = async(uid = '') => {
+export const driverDesconectado = async (uid = "") => {
+  const driver = await Driver.findById(uid);
+  driver.online = false;
+  driver.status = "no disponible";
+  await driver.save();
+  return driver;
+};
 
-    const driver = await Driver.findById(uid);
-    driver.online = true;    
-    driver.status = 'disponible';
-    driver.order = 'libre';
-    await driver.save();
-    return driver;
-}
+export const grabarLocation = async (payload) => {
+  try {
+    const miId = req.uid;
 
-const driverDesconectado = async(uid = '') => {
-    const driver = await Driver.findById(uid);
-    driver.online = false;
-    driver.status = 'no disponible';
-    await driver.save();
-    return driver;
-}
+    Address.findOneAndUpdate(
+      { idDriver: miId },
+      { $set: { mensaje: payload } }
+    );
 
-const grabarLocation = async(payload) => {
-   
-
-    try {
-
-        const miId = req.uid;
-
-        Address.findOneAndUpdate({idDriver: miId},{$set: { mensaje: payload }} );
-
-        return true;
-    } catch (error) {
-        return false;
-    }
-
-}
-
-
-module.exports = {
-    driverConectado,
-    driverDesconectado,
-    grabarLocation,
-
-}
+    return true;
+  } catch (error) {
+    return false;
+  }
+};

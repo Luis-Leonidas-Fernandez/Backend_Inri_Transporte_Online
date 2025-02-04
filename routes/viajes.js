@@ -1,13 +1,13 @@
 /*
     Path: /api/viajes
 */
-const { Router } = require('express');
-const { validarJWT } = require('../middlewares/validar-jwt');
+import { Router } from "express";
+import { validarJWT } from "../middlewares/validar-jwt.js";
 
-const { obtenerViajeUsuario } = require('../controllers/viajes');
+import { obtenerViajeUsuario } from "../controllers/viajes.js";
 const router = Router();
 
 //USER CHECK THE STATUS OF THEIR ORDER
-router.get('/:_id', validarJWT, obtenerViajeUsuario);
+router.get("/:_id", validarJWT, obtenerViajeUsuario);
 
-module.exports = router;
+export default router;

@@ -3,17 +3,21 @@
 
 */
 
-const { Router } = require('express');
-const { validarJWT } = require('../middlewares/validar-jwt');
-const { validarDistanciaEntreCoordendas} = require('../middlewares/validar-distancia');
-const { postUbicacion, getUbicaciones, removeAddress }= require('../controllers/authCoordenadas');
+import { Router } from "express";
+import { validarJWT } from "../middlewares/validar-jwt.js";
+// import { validarDistanciaEntreCoordendas} from '../middlewares/validar-distancia';
+import {
+  postUbicacion,
+  getUbicaciones,
+  removeAddress,
+} from "../controllers/authCoordenadas.js";
 const router = Router();
 
 //USER ENTERS AN ORDER
-router.post('/lugar', validarJWT, postUbicacion);
-router.put('/remove/address', validarJWT, removeAddress);
+router.post("/lugar", validarJWT, postUbicacion);
+router.put("/remove/address", validarJWT, removeAddress);
 
 //GET ALL THE ORDERS
-router.get('/', getUbicaciones );
+router.get("/", getUbicaciones);
 
-module.exports =router;
+export default router;

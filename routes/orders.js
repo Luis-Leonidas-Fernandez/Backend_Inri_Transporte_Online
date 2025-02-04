@@ -1,14 +1,10 @@
-/*
-    path: api/usuarios
-
-*/
 import { Router } from "express";
 import { validarJWT } from "../middlewares/validar-jwt.js";
-
-import { getUsuarios } from "../controllers/usuarios.js";
+import { postOrder } from "../controllers/orders.js";
 
 const router = Router();
 
-router.get("/", validarJWT, getUsuarios);
+// path: /api/orders
+router.post("/orders", validarJWT, postOrder);
 
 export default router;
