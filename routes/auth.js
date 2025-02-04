@@ -18,6 +18,7 @@ router.post(
     check("nombre", "El nombre es obligatorio").not().isEmpty(),
     check("password", "La contraseña es obligatoria").not().isEmpty(),
     check("email", "El correo es obligatorio").isEmail(),
+    check("telefono", "El telefono es obligatorio").not().isEmpty(),
     validarCampos,
   ],
   crearUsuario

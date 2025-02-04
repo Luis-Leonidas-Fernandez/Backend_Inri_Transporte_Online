@@ -22,13 +22,13 @@ export const crearUsuario = async (req, res = response) => {
       msg: "El correo ya está registrado",
     });
   } else {
-    const newusuario = new Usuario(req.body);
+    const newUsuario = new Usuario(req.body);
     // Encriptar contraseña
     const salt = bcrypt.genSaltSync();
-    newusuario.password = bcrypt.hashSync(password, salt);
+    newUsuario.password = bcrypt.hashSync(password, salt);
 
     // Guarda el nuevo usuario en la base de datos
-    const newUser = await newusuario.save();
+    const newUser = await newUsuario.save();
 
     // Almacena el id del nuevo usuario
     const newUserId = newUser._id.toString();
@@ -37,16 +37,17 @@ export const crearUsuario = async (req, res = response) => {
     const token = await generarJWT(newUserId);
 
     const usuario = {
-      role: newusuario.role,
-      nombre: newusuario.nombre,
-      email: newusuario.email,
-      online: newusuario.online,
-      uid: newusuario.id,
+      role: newUsuario.role,
+      nombre: newUsuario.nombre,
+      email: newUsuario.email,
+      telefono: newUsuario.telefono,
+      online: newUsuario.online,
+      uid: newUsuario.id,
       urlMapbox: urlMapboxKey,
       tokenMapBox: tokenMapBoxKey,
       idMapBox: idMapBoxKey,
       mapToken: mapTokenKey,
-      cupon: newusuario.cupon,
+      cupon: newUsuario.cupon,
     };
 
     res.cookie("token", token);
@@ -87,6 +88,7 @@ export const login = async (req, res = response) => {
       role: usuarioDB.role,
       nombre: usuarioDB.nombre,
       email: usuarioDB.email,
+      telefono: usuarioDB.telefono,
       online: usuarioDB.online,
       cupon: usuarioDB.cupon,
       uid: usuarioDB.id,
