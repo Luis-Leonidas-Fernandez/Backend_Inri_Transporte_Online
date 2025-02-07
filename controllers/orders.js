@@ -2,7 +2,7 @@ import Orders from "../models/orders.js";
 
 export const postOrder = async (req, res) => {
   try {
-    const { carga, prioridad, estadoSubasta, origen, destino } = req.body;
+    const { carga, prioridad, estadoSubasta, origen, destino, fechaRetiro } = req.body;
 
     // UserId desde JWT
     const userId = req.uid;
@@ -14,6 +14,7 @@ export const postOrder = async (req, res) => {
       destino: destino,
       prioridad: prioridad,
       estadoSubasta: estadoSubasta,
+      fechaRetiro: fechaRetiro
     });
 
     // Se guarda la nueva orden en la DB
