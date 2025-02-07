@@ -12,51 +12,60 @@ import {
 
 export const crearUsuario = async (req, res = response) => {
   //unica funcion modificada 16/05/2023
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  const existeEmail = await Usuario.findOne({ email });
+    const existeEmail = await Usuario.findOne({ email });
 
-  if (existeEmail) {
-    return res.status(400).json({
-      ok: false,
-      msg: "El correo ya está registrado",
-    });
-  } else {
-    const newUsuario = new Usuario(req.body);
-    // Encriptar contraseña
-    const salt = bcrypt.genSaltSync();
-    newUsuario.password = bcrypt.hashSync(password, salt);
+    if (existeEmail) {
+      return res.status(400).json({
+        ok: false,
+        msg: "El correo ya está registrado",
+      });
+    } else {
+      const newUsuario = new Usuario(req.body);
+      // Encriptar contraseña
+      const salt = bcrypt.genSaltSync();
+      newUsuario.password = bcrypt.hashSync(password, salt);
 
-    // Guarda el nuevo usuario en la base de datos
-    const newUser = await newUsuario.save();
+      // Guarda el nuevo usuario en la base de datos
+      const newUser = await newUsuario.save();
 
-    // Almacena el id del nuevo usuario
-    const newUserId = newUser._id.toString();
+      // Almacena el id del nuevo usuario
+      const newUserId = newUser._id.toString();
 
-    // Generar mi JWT
-    const token = await generarJWT(newUserId);
+      // Generar mi JWT
+      const token = await generarJWT(newUserId);
 
-    const usuario = {
-      role: newUsuario.role,
-      nombre: newUsuario.nombre,
-      email: newUsuario.email,
-      telefono: newUsuario.telefono,
-      online: newUsuario.online,
-      uid: newUsuario.id,
-      urlMapbox: urlMapboxKey,
-      tokenMapBox: tokenMapBoxKey,
-      idMapBox: idMapBoxKey,
-      mapToken: mapTokenKey,
-      cupon: newUsuario.cupon,
-    };
+      const usuario = {
+        role: newUsuario.role,
+        nombre: newUsuario.nombre,
+        email: newUsuario.email,
+        telefono: newUsuario.telefono,
+        online: newUsuario.online,
+        uid: newUsuario.id,
+        urlMapbox: urlMapboxKey,
+        tokenMapBox: tokenMapBoxKey,
+        idMapBox: idMapBoxKey,
+        mapToken: mapTokenKey,
+        cupon: newUsuario.cupon,
+      };
 
-    res.cookie("token", token);
+      res.cookie("token", token);
 
-    return res.json({
-      ok: true,
-      usuario,
-      token,
-    });
+      res.status(200).json({
+        // ok: true,
+        usuario,
+        // token,
+      });
+      console.log(
+        "[auth.crearUsuario] Usuario creado:",
+        newUserId
+      );
+    }
+  } catch (error) {
+    console.log("[auth.crearUsuario] Error al crear un usuario:", error);
+    res.status(400).json({ error: error });
   }
 };
 
@@ -101,14 +110,15 @@ export const login = async (req, res = response) => {
     res.cookie("token", token);
 
     res.status(200).json({
-      ok: true,
+      // ok: true,
       usuario,
-      token,
+      // token,
     });
+    console.log("[auth.login] Sesión iniciada:", usuarioDB._id.toString());
   } catch (error) {
-    return res.status(500).json({
-      ok: false,
-      msg: "Hable con el administrador",
+    console.log("[auth.login] Error al iniciar sesión:", error);
+    res.status(400).json({
+      error: error,
     });
   }
 };
@@ -117,9 +127,10 @@ export const logout = async (_req, res = response) => {
   try {
     res.cookie("token", "", { expires: new Date(0) });
     res.status(200).json({ message: "Sesión cerrada correctamente" });
+    console.log("[auth.logout] Sesión cerrada.");
   } catch (error) {
+    console.log("[auth.logout] Error al cerrar sesión:", error);
     res.status(400).json({ error: error });
-    console.error(error);
   }
 };
 
