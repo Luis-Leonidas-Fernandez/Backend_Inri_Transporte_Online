@@ -5,64 +5,88 @@ const OrdersSchema = Schema(
     idUser: {
       type: Schema.Types.ObjectId,
       ref: "Usuario",
-      required: false,
+      required: true,
     },
-    tipoCarga: {
-      type: String,
-      required: false,
-    },
-    peso: {
-      peso: {
-        type: Number,
-        required: false,
+    carga: [
+      {
+        tipoCarga: {
+          type: String,
+        },
+        pesoTotal: {
+          peso: {
+            type: Number,
+          },
+          unidadPeso: {
+            type: String,
+          },
+        },
+        medidasTotal: {
+          alto: {
+            type: Number,
+          },
+          ancho: {
+            type: Number,
+          },
+          profundidad: {
+            type: Number,
+          },
+          unidadMedida: {
+            type: String,
+          },
+        },
       },
-      unidadPeso: {
-        type: String,
-        required: false,
-      },
-    },
-    tamaño: {
-      alto: {
-        type: Number,
-        required: false,
-      },
-      ancho: {
-        type: Number,
-        required: false,
-      },
-      profundidad: {
-        type: Number,
-        required: false,
-      },
-    },
-    ubicacion: {
+    ],
+    origen: {
       calle: {
         type: String,
-        required: false,
       },
       altura: {
-        type: Number,
-        required: false,
+        type: String,
       },
       provincia: {
         type: String,
-        required: false,
       },
       ciudad: {
         type: String,
-        required: false,
+      },
+      codigoPostal: {
+        type: String,
+      },
+      referencia: {
+        type: String,
+      },
+    },
+    destino: {
+      calle: {
+        type: String,
+      },
+      altura: {
+        type: String,
+      },
+      provincia: {
+        type: String,
+      },
+      ciudad: {
+        type: String,
+      },
+      codigoPostal: {
+        type: String,
+      },
+      referencia: {
+        type: String,
       },
     },
     prioridad: {
       type: String,
-      required: false,
     },
     estadoSubasta: {
       type: String,
-      required: false,
+    },
+    fechaRetiro: {
+      type: Date,
     },
   },
-  { timestamps: true } // Se corrige la definición de timestamps
+  { timestamps: true }
 );
 
 OrdersSchema.method("toJSON", function () {
