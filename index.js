@@ -26,26 +26,31 @@ import ordersRoute from "./routes/orders.js";
 import cookieParser from "cookie-parser";
 import { google } from "googleapis";
 import admin from "firebase-admin";
-import serviceAccount from "./firebase-admin.json" assert { type: "json" };
+import serviceAccount from "./firebase-admin.json" with { type: "json" };
 
-import {
-  dispatchDrivers,
-  getPrice,
-  createVauchers,
-  createPrice,
+
+import {    
   createInvoiceJob,
   createInvoicePdfJob,
 } from "./service/invoice_server.js";
 
+import {
+  getPrice, 
+} from "./Generators/price.js";
 
-// const { dispatchDrivers } = require("./service/dispatch_server");
-// const { getPrice } = require("./Generators/price");
-// const { createVauchers } = require("./service/cupon_server");
-// const { createPrice } = require("./service/price_server");
-// const {
-//   createInvoiceJob,
-//   createInvoicePdfJob,
-// } = require("./service/invoice_server");
+import {
+  dispatchDrivers
+} from "./service/dispatch_server.js";
+
+import {
+  createVauchers
+} from "./service/cupon_server.js";
+
+import {
+  createPrice
+} from "./service/price_server.js";
+
+
 
 // Cargar las variables de entorno del archivo .env
 dotenv.config();
