@@ -24,6 +24,19 @@ import invoiceRoute from "./routes/invoice.js";
 import { fileURLToPath } from "url";
 import ordersRoute from "./routes/orders.js";
 import cookieParser from "cookie-parser";
+import { google } from "googleapis";
+import admin from "firebase-admin";
+import serviceAccount from "./firebase-admin.json" assert { type: "json" };
+
+import {
+  dispatchDrivers,
+  getPrice,
+  createVauchers,
+  createPrice,
+  createInvoiceJob,
+  createInvoicePdfJob,
+} from "./service/invoice_server.js";
+
 
 // const { dispatchDrivers } = require("./service/dispatch_server");
 // const { getPrice } = require("./Generators/price");
@@ -62,6 +75,30 @@ const __dirname = path.dirname(__filename);
 
 const publicPath = path.resolve(__dirname, "public");
 app.use(express.static(publicPath));
+
+// Inicializar Firebase Admin SDK
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
+// Obtener token de acceso para Firebase
+const getAccessToken = async () => {
+  const jwtClient = new google.auth.JWT(
+      serviceAccount.client_email,
+      null,
+      serviceAccount.private_key,
+      ["https://www.googleapis.com/auth/firebase.messaging"]
+  );
+
+  try {
+      const tokens = await jwtClient.authorize();
+      return tokens.access_token;
+  } catch (error) {
+      console.error("Error obteniendo el token de Firebase:", error);
+      return null;
+  }
+};
+
 
 // Mis Rutas Usuarios
 app.use("/api", authRoute);
