@@ -4,6 +4,7 @@ import { validarCampos } from "../middlewares/validar-campos.js";
 import {
   createConductor,
   loginConductor,
+  logoutConductor,
 } from "../controllers/authConductor.js";
 
 const router = Router();
@@ -30,5 +31,8 @@ router.post(
   ],
   loginConductor
 );
+
+// path: /api/driver/logout
+router.post("/logout", logoutConductor);
 
 export default router;

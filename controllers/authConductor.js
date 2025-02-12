@@ -113,3 +113,17 @@ export const loginConductor = async (req, res = response) => {
     });
   }
 };
+
+export const logoutConductor = async (_req, res = response) => {
+  try {
+    res.cookie("token", "", { expires: new Date(0) });
+    res.status(200).json({ message: "Sesión cerrada correctamente" });
+    console.log("[authConductor.logoutConductor] Sesión cerrada.");
+  } catch (error) {
+    console.log(
+      "[authConductor.logoutConductor] Error al cerrar sesión:",
+      error
+    );
+    res.status(400).json({ error: error });
+  }
+};
