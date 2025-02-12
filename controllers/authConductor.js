@@ -58,3 +58,58 @@ export const createConductor = async (req, res = response) => {
     res.status(400).json({ error: error });
   }
 };
+
+export const loginConductor = async (req, res = response) => {
+  const { email, password } = req.body;
+
+  try {
+    const conductorDB = await Conductor.findOne({ email });
+    if (!conductorDB) {
+      return res.status(404).json({
+        ok: false,
+        msg: "Email no encontrado",
+      });
+    }
+
+    // Validar el password
+    const validPassword = bcrypt.compareSync(password, conductorDB.password);
+    if (!validPassword) {
+      return res.status(400).json({
+        ok: false,
+        msg: "La contraseña no es valida",
+      });
+    }
+
+    // Generar el JWT
+    const token = await generarJWT(conductorDB.id);
+
+    const conductor = {
+      nombre: conductorDB.nombre,
+      email: conductorDB.email,
+      telefono: conductorDB.telefono,
+      uid: conductorDB.id,
+      licencia: conductorDB.licencia,
+      vehiculos: conductorDB.vehiculos,
+      direccion: conductorDB.direccion,
+    };
+
+    // Se almacena el token en una cookie llamada "token"
+    res.cookie("token", token);
+
+    res.status(200).json({
+      conductor,
+    });
+    console.log(
+      "[authConductor.loginConductor] Sesión iniciada:",
+      conductorDB._id.toString()
+    );
+  } catch (error) {
+    console.log(
+      "[authConductor.loginConductor] Error al iniciar sesión:",
+      error
+    );
+    res.status(400).json({
+      error: error,
+    });
+  }
+};

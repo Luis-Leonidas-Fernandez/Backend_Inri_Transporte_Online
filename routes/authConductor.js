@@ -1,7 +1,10 @@
 import { Router } from "express";
 import { check } from "express-validator";
 import { validarCampos } from "../middlewares/validar-campos.js";
-import { createConductor } from "../controllers/authConductor.js";
+import {
+  createConductor,
+  loginConductor,
+} from "../controllers/authConductor.js";
 
 const router = Router();
 
@@ -16,6 +19,16 @@ router.post(
     validarCampos,
   ],
   createConductor
+);
+
+// path: /api/driver/login
+router.post(
+  "/login",
+  [
+    check("password", "La contraseña es obligatoria").not().isEmpty(),
+    check("email", "El correo es obligatorio").isEmail(),
+  ],
+  loginConductor
 );
 
 export default router;

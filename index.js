@@ -24,7 +24,7 @@ import invoiceRoute from "./routes/invoice.js";
 import { fileURLToPath } from "url";
 import ordersRoute from "./routes/orders.js";
 import cookieParser from "cookie-parser";
-import conductorRoute from "./routes/conductor.js"
+import conductorRoute from "./routes/authConductor.js"
 // import { google } from "googleapis";
 // import admin from "firebase-admin";
 // import serviceAccount from "./firebase-admin.json" with { type: "json" };
