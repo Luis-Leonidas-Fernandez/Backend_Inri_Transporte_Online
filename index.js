@@ -24,9 +24,10 @@ import invoiceRoute from "./routes/invoice.js";
 import { fileURLToPath } from "url";
 import ordersRoute from "./routes/orders.js";
 import cookieParser from "cookie-parser";
-import { google } from "googleapis";
-import admin from "firebase-admin";
-import serviceAccount from "./firebase-admin.json" with { type: "json" };
+import conductorRoute from "./routes/authConductor.js"
+// import { google } from "googleapis";
+// import admin from "firebase-admin";
+// import serviceAccount from "./firebase-admin.json" with { type: "json" };
 
 
 import {    
@@ -81,28 +82,28 @@ const __dirname = path.dirname(__filename);
 const publicPath = path.resolve(__dirname, "public");
 app.use(express.static(publicPath));
 
-// Inicializar Firebase Admin SDK
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
+// // Inicializar Firebase Admin SDK
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+// });
 
-// Obtener token de acceso para Firebase
-const getAccessToken = async () => {
-  const jwtClient = new google.auth.JWT(
-      serviceAccount.client_email,
-      null,
-      serviceAccount.private_key,
-      ["https://www.googleapis.com/auth/firebase.messaging"]
-  );
+// // Obtener token de acceso para Firebase
+// const getAccessToken = async () => {
+//   const jwtClient = new google.auth.JWT(
+//       serviceAccount.client_email,
+//       null,
+//       serviceAccount.private_key,
+//       ["https://www.googleapis.com/auth/firebase.messaging"]
+//   );
 
-  try {
-      const tokens = await jwtClient.authorize();
-      return tokens.access_token;
-  } catch (error) {
-      console.error("Error obteniendo el token de Firebase:", error);
-      return null;
-  }
-};
+//   try {
+//       const tokens = await jwtClient.authorize();
+//       return tokens.access_token;
+//   } catch (error) {
+//       console.error("Error obteniendo el token de Firebase:", error);
+//       return null;
+//   }
+// };
 
 
 // Mis Rutas Usuarios
@@ -112,6 +113,9 @@ app.use("/api/ubicaciones", ubicacionesRoute);
 
 // Ruta de orders
 app.use("/api", ordersRoute);
+
+// Ruta de conductores
+app.use("/api/driver", conductorRoute)
 
 // Mis Rutas Drivers
 app.use("/api/logindriver", authDriverRoute);
