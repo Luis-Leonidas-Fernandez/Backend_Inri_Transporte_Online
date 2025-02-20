@@ -9,7 +9,7 @@ const BidsSchema = Schema(
     },
     idOrder: {
       type: Schema.Types.ObjectId,
-      ref: "Conductor",
+      ref: "Orders",
       required: true,
     },
     oferta: {
