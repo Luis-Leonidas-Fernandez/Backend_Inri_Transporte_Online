@@ -21,3 +21,17 @@ export const postBid = async (req, res) => {
     console.log("[bids.postBid] Se ha producido un error:", error);
   }
 };
+
+export const getBidsForConductor = async (req, res) => {
+  try {
+    const conductorId = req.uid;
+    const bids = await Bids.find({ idConductor: conductorId }).sort({
+      createdAt: -1,
+    });
+    res.status(200).json({ bids });
+    console.log("[bids.getBidsForConductor] Ofertas encontradas:", bids.length);
+  } catch (error) {
+    res.status(400).json({ error: error });
+    console.log("[bids.getBidsForConductor] Se ha producido un error", error);
+  }
+};
