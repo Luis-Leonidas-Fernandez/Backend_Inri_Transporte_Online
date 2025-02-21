@@ -30,8 +30,7 @@ const BidsSchema = Schema(
 );
 
 BidsSchema.method("toJSON", function () {
-  const { __v, _id, password, ...object } = this.toObject();
-  object.uid = _id;
+  const { __v, ...object } = this.toObject();
   return object;
 });
 
