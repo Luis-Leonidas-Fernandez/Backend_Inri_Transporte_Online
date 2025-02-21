@@ -23,35 +23,25 @@ import cuponRoute from "./routes/cupon.js";
 import invoiceRoute from "./routes/invoice.js";
 import { fileURLToPath } from "url";
 import ordersRoute from "./routes/orders.js";
+import bidsRoute from "./routes/bids.js";
 import cookieParser from "cookie-parser";
-import conductorRoute from "./routes/authConductor.js"
+import conductorRoute from "./routes/authConductor.js";
 // import { google } from "googleapis";
 // import admin from "firebase-admin";
 // import serviceAccount from "./firebase-admin.json" with { type: "json" };
 
-
-import {    
+import {
   createInvoiceJob,
   createInvoicePdfJob,
 } from "./service/invoice_server.js";
 
-import {
-  getPrice, 
-} from "./Generators/price.js";
+import { getPrice } from "./Generators/price.js";
 
-import {
-  dispatchDrivers
-} from "./service/dispatch_server.js";
+import { dispatchDrivers } from "./service/dispatch_server.js";
 
-import {
-  createVauchers
-} from "./service/cupon_server.js";
+import { createVauchers } from "./service/cupon_server.js";
 
-import {
-  createPrice
-} from "./service/price_server.js";
-
-
+import { createPrice } from "./service/price_server.js";
 
 // Cargar las variables de entorno del archivo .env
 dotenv.config();
@@ -105,7 +95,6 @@ app.use(express.static(publicPath));
 //   }
 // };
 
-
 // Mis Rutas Usuarios
 app.use("/api", authRoute);
 app.use("/api/usuarios", usuariosRoute);
@@ -115,7 +104,10 @@ app.use("/api/ubicaciones", ubicacionesRoute);
 app.use("/api", ordersRoute);
 
 // Ruta de conductores
-app.use("/api/driver", conductorRoute)
+app.use("/api/driver", conductorRoute);
+
+// Ruta de Bids
+app.use("/api", bidsRoute);
 
 // Mis Rutas Drivers
 app.use("/api/logindriver", authDriverRoute);

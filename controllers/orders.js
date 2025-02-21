@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Orders from "../models/orders.js";
 
 export const postOrder = async (req, res) => {
@@ -63,5 +64,53 @@ export const getOrdersForUser = async (req, res) => {
   } catch (error) {
     console.log("[orders.getOrdersForUser] Se ha producido un error:", error);
     res.status(400).json({ error: error });
+  }
+};
+
+// Trae todas las ordenes de un usuario con sus respectivas propuestas(bids)
+export const getOrdersForUserComplete = async (req, res) => {
+  try {
+    const userId = req.uid;
+    const userIdObject = new mongoose.Types.ObjectId(userId);
+    const orders = await Orders.aggregate([
+      {
+        $match: { idUser: userIdObject },
+      },
+      {
+        $lookup: {
+          from: "bids", // Colección con la que hacemos el join
+          localField: "_id", // Campo en la colección 'orders'
+          foreignField: "idOrder", // Campo que conecta en la colección 'bids'
+          as: "bids", // Nombre del array resultante
+        },
+      },
+      {
+        // Especificamos los datos a mostrar
+        $project: {
+          order: {
+            _id: "$_id",
+            idUser: "$idUser",
+            carga: "$carga",
+            origen: "$origen",
+            destino: "$destino",
+            prioridad: "$prioridad",
+            estadoSubasta: "$estadoSubasta",
+            fechaRetiro: "$fechaRetiro",
+            createdAt: "$createdAt",
+            updatedAt: "$updatedAt",
+          },
+          bids: 1, // Incluimos directamente el array de bids
+        },
+      },
+    ]);
+
+    res.status(200).json({ orders });
+    console.log(
+      "[orders.getOrdersForUserComplete] Ordenes encontradas:",
+      orders.length
+    );
+  } catch (error) {
+    res.status(400).json({ error: error });
+    console.log("[orders.getOrdersForUserComplete] Error:", error);
   }
 };
