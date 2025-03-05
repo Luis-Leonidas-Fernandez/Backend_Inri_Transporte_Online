@@ -37,7 +37,7 @@ export const postOrder = async (req, res) => {
 export const getOrders = async (req, res) => {
   try {
     // Busca la colección orders y las ordena de la más reciente a la más antigua.
-    const orders = await Orders.find({}).sort({ createdAt: -1 });
+    const orders = await Orders.find({}).populate("idUser", "nombre email telefono").sort({ createdAt: -1 });
     res.status(200).json({ orders });
     console.log("[orders.getOrders] Ordenes encontradas:", orders.length);
   } catch (error) {
