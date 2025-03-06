@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Orders from "../models/orders.js";
+import Bids from "../models/bids.js";
 
 export const postOrder = async (req, res) => {
   try {
@@ -90,38 +91,17 @@ export const getOrdersForUser = async (req, res) => {
 export const getOrdersForUserComplete = async (req, res) => {
   try {
     const userId = req.uid;
-    const userIdObject = new mongoose.Types.ObjectId(userId);
-    const orders = await Orders.aggregate([
-      {
-        $match: { idUser: userIdObject },
-      },
-      {
-        $lookup: {
-          from: "bids", // Colección con la que hacemos el join
-          localField: "_id", // Campo en la colección 'orders'
-          foreignField: "idOrder", // Campo que conecta en la colección 'bids'
-          as: "bids", // Nombre del array resultante
-        },
-      },
-      {
-        // Especificamos los datos a mostrar
-        $project: {
-          order: {
-            _id: "$_id",
-            idUser: "$idUser",
-            carga: "$carga",
-            origen: "$origen",
-            destino: "$destino",
-            prioridad: "$prioridad",
-            estadoSubasta: "$estadoSubasta",
-            fechaRetiro: "$fechaRetiro",
-            createdAt: "$createdAt",
-            updatedAt: "$updatedAt",
-          },
-          bids: 1, // Incluimos directamente el array de bids
-        },
-      },
-    ]);
+    // Trae la coleccion bids con el campo del conductor poblado
+    const bidsPopulate = await Bids.find({}).populate("idConductor");
+    const ordersForUser = await Orders.find({ idUser: userId }).sort({
+      createdAt: -1,
+    });
+
+    // Construye el objeto con la orden y sus bids
+    const orders = ordersForUser.map((order) => {
+      const bids = bidsPopulate.filter((bid) => order._id.equals(bid.idOrder));
+      return { ...order.toObject(), bids };
+    });
 
     res.status(200).json({ orders });
     console.log(
