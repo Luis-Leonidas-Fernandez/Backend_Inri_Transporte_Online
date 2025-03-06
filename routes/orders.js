@@ -6,6 +6,7 @@ import {
   getOrdersForUser,
   getOrdersForUserComplete,
   postOrder,
+  updateOrderState,
 } from "../controllers/orders.js";
 
 const router = Router();
@@ -18,5 +19,8 @@ router.get("/orders/open", validarJWT, getOpenOrders);
 
 // path: /api/orders/all
 router.get("/orders/all", validarJWT, getOrders);
+
+// path: /api/orders/:id
+router.patch("/orders/:_id", validarJWT, updateOrderState);
 
 export default router;

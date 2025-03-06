@@ -133,3 +133,27 @@ export const getOrdersForUserComplete = async (req, res) => {
     console.log("[orders.getOrdersForUserComplete] Error:", error);
   }
 };
+
+export const updateOrderState = async (req, res) => {
+  try {
+    const { _id } = req.params;
+    const { estadoSubasta } = req.body;
+    console.log(_id);
+
+    const idOrder = new mongoose.Types.ObjectId(_id);
+
+    const orderUpdated = await Orders.findByIdAndUpdate(
+      { _id: idOrder },
+      { estadoSubasta: estadoSubasta }, // Actualiza el campo estadoSubasta
+      { new: true } // Muestra el documento actualizado
+    );
+    res.status(200).json({ orderUpdated });
+    console.log(
+      "[orders.updateOrderState] Se actualizó el estado de la orden:",
+      _id
+    );
+  } catch (error) {
+    console.log("[orders.updateOrderState] Se ha producido un error:", error);
+    res.status(400).json({ error: error });
+  }
+};
