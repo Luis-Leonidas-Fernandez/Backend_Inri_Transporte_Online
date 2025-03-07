@@ -92,7 +92,7 @@ export const getOrdersForUserComplete = async (req, res) => {
   try {
     const userId = req.uid;
     // Trae la coleccion bids con el campo del conductor poblado
-    const bidsPopulate = await Bids.find({}).populate("idConductor");
+    const bidsPopulate = await Bids.find({}).populate("idConductor", "nombre email telefono vehiculos licencia direccion");
     const ordersForUser = await Orders.find({ idUser: userId }).sort({
       createdAt: -1,
     });
@@ -118,7 +118,6 @@ export const updateOrderState = async (req, res) => {
   try {
     const { _id } = req.params;
     const { estadoSubasta } = req.body;
-    console.log(_id);
 
     const idOrder = new mongoose.Types.ObjectId(_id);
 
@@ -127,7 +126,7 @@ export const updateOrderState = async (req, res) => {
       { estadoSubasta: estadoSubasta }, // Actualiza el campo estadoSubasta
       { new: true } // Muestra el documento actualizado
     );
-    res.status(200).json({ orderUpdated });
+    res.status(200).json( orderUpdated );
     console.log(
       "[orders.updateOrderState] Se actualizó el estado de la orden:",
       _id
