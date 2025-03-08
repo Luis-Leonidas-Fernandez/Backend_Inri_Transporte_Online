@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Orders from "../models/orders.js";
+import Bids from "../models/bids.js";
 
 export const postOrder = async (req, res) => {
   try {
@@ -37,11 +38,30 @@ export const postOrder = async (req, res) => {
 export const getOrders = async (req, res) => {
   try {
     // Busca la colección orders y las ordena de la más reciente a la más antigua.
-    const orders = await Orders.find({}).sort({ createdAt: -1 });
+    const orders = await Orders.find({})
+      .populate("idUser", "nombre email telefono")
+      .sort({ createdAt: -1 });
     res.status(200).json({ orders });
     console.log("[orders.getOrders] Ordenes encontradas:", orders.length);
   } catch (error) {
     console.log("[orders.getOrders] Se ha producido un error:", error);
+    res.status(400).json({ error: error });
+  }
+};
+
+export const getOpenOrders = async (req, res) => {
+  try {
+    // Busca la colección orders, trae las ordenes con subasta abierta y las ordena de la más reciente a la más antigua.
+    const orders = await Orders.find({ estadoSubasta: "abierto" })
+      .populate("idUser", "nombre email telefono")
+      .sort({ createdAt: -1 });
+    res.status(200).json({ orders });
+    console.log(
+      "[orders.getOpenOrders] Ordenes abiertas encontradas:",
+      orders.length
+    );
+  } catch (error) {
+    console.log("[orders.getOpenOrders] Se ha producido un error:", error);
     res.status(400).json({ error: error });
   }
 };
@@ -71,38 +91,17 @@ export const getOrdersForUser = async (req, res) => {
 export const getOrdersForUserComplete = async (req, res) => {
   try {
     const userId = req.uid;
-    const userIdObject = new mongoose.Types.ObjectId(userId);
-    const orders = await Orders.aggregate([
-      {
-        $match: { idUser: userIdObject },
-      },
-      {
-        $lookup: {
-          from: "bids", // Colección con la que hacemos el join
-          localField: "_id", // Campo en la colección 'orders'
-          foreignField: "idOrder", // Campo que conecta en la colección 'bids'
-          as: "bids", // Nombre del array resultante
-        },
-      },
-      {
-        // Especificamos los datos a mostrar
-        $project: {
-          order: {
-            _id: "$_id",
-            idUser: "$idUser",
-            carga: "$carga",
-            origen: "$origen",
-            destino: "$destino",
-            prioridad: "$prioridad",
-            estadoSubasta: "$estadoSubasta",
-            fechaRetiro: "$fechaRetiro",
-            createdAt: "$createdAt",
-            updatedAt: "$updatedAt",
-          },
-          bids: 1, // Incluimos directamente el array de bids
-        },
-      },
-    ]);
+    // Trae la coleccion bids con el campo del conductor poblado
+    const bidsPopulate = await Bids.find({}).populate("idConductor", "nombre email telefono vehiculos licencia direccion");
+    const ordersForUser = await Orders.find({ idUser: userId }).sort({
+      createdAt: -1,
+    });
+
+    // Construye el objeto con la orden y sus bids
+    const orders = ordersForUser.map((order) => {
+      const bids = bidsPopulate.filter((bid) => order._id.equals(bid.idOrder));
+      return { ...order.toObject(), bids };
+    });
 
     res.status(200).json({ orders });
     console.log(
@@ -112,5 +111,28 @@ export const getOrdersForUserComplete = async (req, res) => {
   } catch (error) {
     res.status(400).json({ error: error });
     console.log("[orders.getOrdersForUserComplete] Error:", error);
+  }
+};
+
+export const updateOrderState = async (req, res) => {
+  try {
+    const { _id } = req.params;
+    const { estadoSubasta } = req.body;
+
+    const idOrder = new mongoose.Types.ObjectId(_id);
+
+    const orderUpdated = await Orders.findByIdAndUpdate(
+      { _id: idOrder },
+      { estadoSubasta: estadoSubasta }, // Actualiza el campo estadoSubasta
+      { new: true } // Muestra el documento actualizado
+    );
+    res.status(200).json( orderUpdated );
+    console.log(
+      "[orders.updateOrderState] Se actualizó el estado de la orden:",
+      _id
+    );
+  } catch (error) {
+    console.log("[orders.updateOrderState] Se ha producido un error:", error);
+    res.status(400).json({ error: error });
   }
 };
