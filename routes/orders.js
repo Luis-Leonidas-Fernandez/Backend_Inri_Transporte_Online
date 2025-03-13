@@ -6,6 +6,7 @@ import {
   getOrdersForUser,
   getOrdersForUserComplete,
   postOrder,
+  removeUnselectedBids,
   updateOrderState,
 } from "../controllers/orders.js";
 
@@ -22,5 +23,8 @@ router.get("/orders/all", validarJWT, getOrders);
 
 // path: /api/orders/:id
 router.patch("/orders/:_id", validarJWT, updateOrderState);
+
+// path: /api/orders/:id/bids
+router.delete("/orders/:_id/bids", validarJWT, removeUnselectedBids);
 
 export default router;

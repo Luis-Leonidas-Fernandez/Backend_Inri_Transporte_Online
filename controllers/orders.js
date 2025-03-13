@@ -92,7 +92,10 @@ export const getOrdersForUserComplete = async (req, res) => {
   try {
     const userId = req.uid;
     // Trae la coleccion bids con el campo del conductor poblado
-    const bidsPopulate = await Bids.find({}).populate("idConductor", "nombre email telefono vehiculos licencia direccion");
+    const bidsPopulate = await Bids.find({}).populate(
+      "idConductor",
+      "nombre email telefono vehiculos licencia direccion"
+    );
     const ordersForUser = await Orders.find({ idUser: userId }).sort({
       createdAt: -1,
     });
@@ -126,7 +129,7 @@ export const updateOrderState = async (req, res) => {
       { estadoSubasta: estadoSubasta }, // Actualiza el campo estadoSubasta
       { new: true } // Muestra el documento actualizado
     );
-    res.status(200).json( orderUpdated );
+    res.status(200).json(orderUpdated);
     console.log(
       "[orders.updateOrderState] Se actualizó el estado de la orden:",
       _id
@@ -134,5 +137,41 @@ export const updateOrderState = async (req, res) => {
   } catch (error) {
     console.log("[orders.updateOrderState] Se ha producido un error:", error);
     res.status(400).json({ error: error });
+  }
+};
+
+export const removeUnselectedBids = async (req, res) => {
+  try {
+    const { _id } = req.params;
+    const { bidSelectedId } = req.body;
+
+    // Si no se ingresa el campo bidSelectedId o es un string vacio da error
+    if (!bidSelectedId)
+      return res.status(400).json({ error: "Ingrese un bidSelectedId" });
+
+    // Verifica si la bid existe en la DB
+    const bidSelectedDB = await Bids.find({ _id: bidSelectedId });
+    if (bidSelectedDB.length <= 0)
+      return res.status(400).json({
+        error: "No se encontro la bid seleccionada en la base de datos",
+      });
+
+    const selectedBid = await Bids.deleteMany({
+      // Busca las bids de la order
+      idOrder: _id,
+      // Excluye la bid que fue seleccionada
+      _id: { $ne: bidSelectedId },
+    });
+
+    res.status(200).json(selectedBid);
+    console.log(
+      "[orders.removeUnselectedBids] Se eliminaron las propuestas no seleccionadas"
+    );
+  } catch (error) {
+    res.status(400).json({ error: error });
+    console.log(
+      "[orders.removeUnselectedBids] Se ha producido un error:",
+      error
+    );
   }
 };
