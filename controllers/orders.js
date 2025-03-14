@@ -149,8 +149,8 @@ export const removeUnselectedBids = async (req, res) => {
     if (!bidSelectedId)
       return res.status(400).json({ error: "Ingrese un bidSelectedId" });
 
-    // Verifica si la bid existe en la DB
-    const bidSelectedDB = await Bids.find({ _id: bidSelectedId });
+    // Verifica si la bid existe en la DB y si coincide con la order
+    const bidSelectedDB = await Bids.find({ _id: bidSelectedId, idOrder: _id });
     if (bidSelectedDB.length <= 0)
       return res.status(400).json({
         error: "No se encontro la bid seleccionada en la base de datos",
