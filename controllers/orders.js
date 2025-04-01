@@ -143,24 +143,30 @@ export const updateOrderState = async (req, res) => {
 export const removeUnselectedBids = async (req, res) => {
   try {
     const { _id } = req.params;
-    const { bidSelectedId } = req.body;
 
-    // Si no se ingresa el campo bidSelectedId o es un string vacio da error
-    if (!bidSelectedId)
-      return res.status(400).json({ error: "Ingrese un bidSelectedId" });
+    // Se consulta a la DB por la bid que contiene el campo selected en true
+    const bidSelectedDB = await Bids.find({ idOrder: _id, selected: true });
 
-    // Verifica si la bid existe en la DB y si coincide con la order
-    const bidSelectedDB = await Bids.find({ _id: bidSelectedId, idOrder: _id });
+    // Si no hay ninguna bid con selected en true genera un error
     if (bidSelectedDB.length <= 0)
       return res.status(400).json({
-        error: "No se encontro la bid seleccionada en la base de datos",
+        error: "No se encontro ninguna bid seleccionada en la base de datos",
       });
+
+    // Si hay más de una bid con selected en true genera un error
+    if (bidSelectedDB.length > 0)
+      return res.status(400).json({
+        error:
+          "Se encontro más de una bid seleccionada para esta orden en la base de datos",
+      });
+
+    const bidId = bidSelectedDB[0]._id;
 
     const selectedBid = await Bids.deleteMany({
       // Busca las bids de la order
       idOrder: _id,
       // Excluye la bid que fue seleccionada
-      _id: { $ne: bidSelectedId },
+      _id: { $ne: bidId },
     });
 
     res.status(200).json(selectedBid);
