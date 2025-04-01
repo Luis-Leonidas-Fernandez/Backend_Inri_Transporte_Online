@@ -10,6 +10,7 @@ export const postBid = async (req, res) => {
       idOrder: idOrder,
       oferta: oferta,
       comentario: comentario || "", // Si no hay comentario se guarda un string vacio para no guardar un null
+      selected: false,
     });
 
     const bidSaved = await newBid.save();

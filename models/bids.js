@@ -25,6 +25,9 @@ const BidsSchema = Schema(
     comentario: {
       type: String,
     },
+    selected: {
+      type: Boolean
+    }
   },
   { timestamps: true }
 );
