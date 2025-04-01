@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 
-/** Devuelve el ultimo valor de la nafta Super extraido desde el sitio web: https://surtidores.com.ar/precios/ 
+/** Devuelve el ultimo valor de la nafta Super extraido desde el sitio web: https://surtidores.com.ar/precios/
  * @returns number | undefined
  */
 
@@ -27,4 +27,16 @@ export const getSuperGasPrice = async () => {
       error
     );
   }
+};
+
+/** Devuelve el valor estimado del viaje
+ * @param {number} totalKm Numero de kilometros del viaje a realizar
+ * @param {number} gasPrice Valor del litro de nafta
+ * @returns {number} Valor del viaje
+ */
+
+export const calculateFuelCost = (totalKm, gasPrice) => {
+  const litersRequired = totalKm / 11; // El promedio de autonomia que se tiene por litro de nafta es de aproximadamente 11km
+  const tripCost = litersRequired * gasPrice;
+  return tripCost;
 };
