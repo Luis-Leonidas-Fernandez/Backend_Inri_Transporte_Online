@@ -36,3 +36,20 @@ export const getBidsForConductor = async (req, res) => {
     console.log("[bids.getBidsForConductor] Se ha producido un error", error);
   }
 };
+
+export const deleteBid = async (req, res) => {
+  try {
+    const { _id } = req.params;
+    const bidDeleted = await Bids.findByIdAndDelete({ _id: _id });
+    if (!bidDeleted) {
+      console.log("[bids.deleteBid] La bid no fue encontrada");
+      return res.status(404).json({ error: "La bid no fue encontrada" });
+    }
+
+    console.log("[bids.deleteBid] La bid fue eliminada correctamente");
+    res.sendStatus(204).json({});
+  } catch (error) {
+    console.log("[bids.deleteBid] Se ha producido un error:", error);
+    res.status(400).json({ error: error });
+  }
+};
