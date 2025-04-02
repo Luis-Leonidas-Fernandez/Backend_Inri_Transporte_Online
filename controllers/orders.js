@@ -154,7 +154,7 @@ export const removeUnselectedBids = async (req, res) => {
       });
 
     // Si hay más de una bid con selected en true genera un error
-    if (bidSelectedDB.length > 0)
+    if (bidSelectedDB.length > 1)
       return res.status(400).json({
         error:
           "Se encontro más de una bid seleccionada para esta orden en la base de datos",
@@ -179,5 +179,57 @@ export const removeUnselectedBids = async (req, res) => {
       "[orders.removeUnselectedBids] Se ha producido un error:",
       error
     );
+  }
+};
+
+export const selectBid = async (req, res) => {
+  try {
+    const { _id, _idBid } = req.params;
+    const { selected } = req.body;
+
+    // Se verifica si la orden existe
+    const order = await Orders.find({ _id: _id });
+    if (order.length !== 1) {
+      console.log(
+        "[bids.selectBid] Se ha producido un error: No se encontro la orden"
+      );
+      return res.status(400).json({ error: "No se encontro la orden" });
+    }
+
+    // Se verifica si la bid existe
+    const bid = await Bids.find({ _id: _idBid, idOrder: _id });
+    if (bid.length !== 1) {
+      console.log(
+        "[bids.selectBid] Se ha producido un error: No se encontro la bid"
+      );
+      return res.status(400).json({ error: "No se encontro la bid" });
+    }
+
+    // Si se quiere seleccionar una bid, primero se verifica que no haya otra seleccionada
+    if (selected) {
+      const bids = await Bids.find({ idOrder: _id, selected: true });
+      if (bids.length > 0) {
+        console.log(
+          "[bids.selectBid] Se ha producido un error: Solo se puede seleccionar una bid"
+        );
+        return res
+          .status(400)
+          .json({ error: "Solo se puede seleccionar una bid" });
+      }
+    }
+
+    const filter = { _id: _idBid, idOrder: _id };
+    const update = { selected: selected };
+
+    // Actualiza la bid
+    const result = await Bids.findOneAndUpdate(filter, update, {new: true});
+
+    console.log(
+      "[bids.selectBid] Se ha actualizado selected en la bid correctamente"
+    );
+    res.status(200).json({ result });
+  } catch (error) {
+    res.status(400).json({ error: error });
+    console.log("[bids.selectedBid] Se ha producido un error:", error);
   }
 };
