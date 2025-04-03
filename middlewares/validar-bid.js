@@ -15,5 +15,11 @@ export const validarBid = [
     .notEmpty()
     .isString(),
   body("comentario", "El comentario debe ser un string").optional().isString(),
+  body(
+    "distanciaAlOrigen",
+    "la distanciaAlOrigen debe ser un numero y es un campo obligatorio"
+  )
+    .notEmpty()
+    .isNumeric(),
   validarCampos,
 ];

@@ -26,8 +26,12 @@ const BidsSchema = Schema(
       type: String,
     },
     selected: {
-      type: Boolean
-    }
+      type: Boolean,
+    },
+    distanciaAlOrigen: {
+      type: Number,
+      required: true,
+    },
   },
   { timestamps: true }
 );

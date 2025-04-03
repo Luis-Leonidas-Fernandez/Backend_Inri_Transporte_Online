@@ -2,7 +2,7 @@ import Bids from "../models/bids.js";
 
 export const postBid = async (req, res) => {
   try {
-    const { idOrder, oferta, comentario } = req.body;
+    const { idOrder, oferta, comentario, distanciaAlOrigen } = req.body;
     const conductorId = req.uid;
 
     const newBid = new Bids({
@@ -11,6 +11,7 @@ export const postBid = async (req, res) => {
       oferta: oferta,
       comentario: comentario || "", // Si no hay comentario se guarda un string vacio para no guardar un null
       selected: false,
+      distanciaAlOrigen: distanciaAlOrigen,
     });
 
     const bidSaved = await newBid.save();
