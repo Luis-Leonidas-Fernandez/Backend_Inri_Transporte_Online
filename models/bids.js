@@ -25,6 +25,13 @@ const BidsSchema = Schema(
     comentario: {
       type: String,
     },
+    selected: {
+      type: Boolean,
+    },
+    distanciaAlOrigen: {
+      type: Number,
+      required: true,
+    },
   },
   { timestamps: true }
 );
