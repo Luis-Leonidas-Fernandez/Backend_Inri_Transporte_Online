@@ -1,18 +1,21 @@
 import { MercadoPagoConfig, Preference } from "mercadopago";
 import fetch from "node-fetch";
 import dotenv from "dotenv";
+import PaymentCredential from "../models/PaymentCredential.js";
 
 dotenv.config();
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
-const REDIRECT_URI = "https://www.tobiasnicolasn.com/";
+const REDIRECT_URI = process.env.REDIRECT_URI;
 const ACCESS_TOKEN = process.env.ACCESS_TOKEN;
 
 /** Redirige al usuario/conductor a Mercado Pago para que autorice actuar en su nombre (Crear pagos). Es parte del flujo OAuth 2.0 con Authorization Code. */
-export const connectMercado = (_req, res) => {
+export const connectMercado = (req, res) => {
+  const state = req.uid; // Se guarda el userId en el state para luego reconocerlo en getAccessToken
+
   try {
-    const redirect = `https://auth.mercadopago.com/authorization?client_id=${CLIENT_ID}&response_type=code&platform_id=mp&state=AUTORIZACIONCLIENTE&redirect_uri=${REDIRECT_URI}`;
+    const redirect = `https://auth.mercadopago.com/authorization?client_id=${CLIENT_ID}&response_type=code&platform_id=mp&state=${state}&redirect_uri=${REDIRECT_URI}api/payments/accessToken`;
     console.log(redirect);
     res.status(200).json({ redirect });
   } catch (error) {
@@ -23,13 +26,14 @@ export const connectMercado = (_req, res) => {
 
 /** Función que se encarga de recibir el código de autorización y obtener el access_token y refresh_token */
 export const getAccessToken = async (req, res) => {
-  const { code } = req.query;
+  const { code, state } = req.query; // Se obtiene el code y el state (userId) de la query
+  const userId = state;
 
   const params = new URLSearchParams();
-  params.append("grant_type", "authorization_code");
   params.append("client_id", CLIENT_ID);
   params.append("client_secret", CLIENT_SECRET);
   params.append("code", code);
+  params.append("grant_type", "authorization_code");
   params.append("redirect_uri", REDIRECT_URI);
 
   try {
@@ -38,21 +42,24 @@ export const getAccessToken = async (req, res) => {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: params,
+      params: params,
+      body: params.toString(),
     });
-
     const data = await response.json();
 
     // Utilizamos el access_token y refresh_token para realizar acciones en nombre del usuario
     const { access_token, refresh_token, user_id } = data;
 
+    await createPaymentsCredential(userId, access_token, "mercadopago"); // Guardamos el access_token en la base de datos
+
     console.log(
-      "[payments.getAccessToken] Se ha obtenido el access_token:",
-      access_token,
-      "del usuario:",
-      user_id
+      "[payments.getAccessToken] Se ha guardado el access_token en la base de datos correctamente"
     );
-    res.status(200).json({ access_token, user_id });
+    res.status(200).json({
+      access_token,
+      refresh_token,
+      user_id,
+    });
   } catch (error) {
     console.error("[payments.getAccessToken] Se ha producido un error:", error);
     res.status(500).json({ error: error });
@@ -89,3 +96,28 @@ export async function createPreference(_req, res) {
     console.log("[payments.createPreference] Se ha producido un error:", err);
   }
 }
+
+/** Guarda las credenciales de pago en la base de datos
+ * @param {string} userId - ID del usuario
+ * @param {string} access_token - Token de acceso de Mercado Pago
+ * @param {string} provider - Proveedor de pago (ej: Mercado Pago)
+ */
+const createPaymentsCredential = async (userId, access_token, provider) => {
+  try {
+    const paymentCredentials = new PaymentCredential({
+      idConductor: userId,
+      accessToken: access_token,
+      provider: provider,
+    });
+
+    await paymentCredentials.save();
+    console.log(
+      "[payments.createPaymentsCredential] Credenciales de pago guardadas en la base de datos"
+    );
+  } catch (error) {
+    console.log(
+      "[payments.createPaymentsCredential] Error al guardar las credenciales de pago:",
+      error
+    );
+  }
+};

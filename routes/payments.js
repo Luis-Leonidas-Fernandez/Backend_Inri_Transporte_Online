@@ -11,7 +11,7 @@ const router = Router();
 // path: /api/payments
 router.post("/payments", validarJWT, createPreference);
 router.get("/payments/connect", validarJWT, connectMercado);
-router.get("/payments/accessToken", validarJWT, getAccessToken);
+router.get("/payments/accessToken", getAccessToken);
 
 export default router;
  
