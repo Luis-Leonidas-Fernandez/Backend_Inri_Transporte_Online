@@ -11,12 +11,20 @@ const REDIRECT_URI = process.env.REDIRECT_URI;
 const ACCESS_TOKEN = process.env.ACCESS_TOKEN;
 
 /** Redirige al usuario/conductor a Mercado Pago para que autorice actuar en su nombre (Crear pagos). Es parte del flujo OAuth 2.0 con Authorization Code. */
-export const connectMercado = (req, res) => {
+export const connectMercado = async (req, res) => {
+  const paymentCredential = await checkPaymentsCredential(req.uid); // Se verifica si el usuario ya tiene credenciales de pago
+  if (paymentCredential) {
+    return res
+      .status(400)
+      .json({ error: "El usuario ya genero las credenciales de pago" });
+  }
+  // Aca añadir si el token esta vencido renovarlo con el refresh_token
+
   const state = req.uid; // Se guarda el userId en el state para luego reconocerlo en getAccessToken
 
   try {
     const redirect = `https://auth.mercadopago.com/authorization?client_id=${CLIENT_ID}&response_type=code&platform_id=mp&state=${state}&redirect_uri=${REDIRECT_URI}api/payments/accessToken`;
-    console.log(redirect);
+    console.log("[payments.connectMercado] URL de redireccionamiento:", redirect);
     res.status(200).json({ redirect });
   } catch (error) {
     res.status(400).json({ error: error });
@@ -34,7 +42,7 @@ export const getAccessToken = async (req, res) => {
   params.append("client_secret", CLIENT_SECRET);
   params.append("code", code);
   params.append("grant_type", "authorization_code");
-  params.append("redirect_uri", REDIRECT_URI);
+  params.append("redirect_uri", `${REDIRECT_URI}api/payments/accessToken`);
 
   try {
     const response = await fetch("https://api.mercadopago.com/oauth/token", {
@@ -50,7 +58,12 @@ export const getAccessToken = async (req, res) => {
     // Utilizamos el access_token y refresh_token para realizar acciones en nombre del usuario
     const { access_token, refresh_token, user_id } = data;
 
-    await createPaymentsCredential(userId, access_token, "mercadopago"); // Guardamos el access_token en la base de datos
+    await createPaymentsCredential(
+      userId,
+      access_token,
+      refresh_token,
+      "mercadopago"
+    ); // Guardamos el access_token en la base de datos
 
     console.log(
       "[payments.getAccessToken] Se ha guardado el access_token en la base de datos correctamente"
@@ -102,11 +115,17 @@ export async function createPreference(_req, res) {
  * @param {string} access_token - Token de acceso de Mercado Pago
  * @param {string} provider - Proveedor de pago (ej: Mercado Pago)
  */
-const createPaymentsCredential = async (userId, access_token, provider) => {
+const createPaymentsCredential = async (
+  userId,
+  access_token,
+  refresh_token,
+  provider
+) => {
   try {
     const paymentCredentials = new PaymentCredential({
       idConductor: userId,
       accessToken: access_token,
+      refreshToken: refresh_token,
       provider: provider,
     });
 
@@ -117,6 +136,32 @@ const createPaymentsCredential = async (userId, access_token, provider) => {
   } catch (error) {
     console.log(
       "[payments.createPaymentsCredential] Error al guardar las credenciales de pago:",
+      error
+    );
+  }
+};
+
+/** Verifica si el usuario ya tiene credenciales de pago
+ * @param {string} userId - ID del usuario
+ * @returns {Promise<boolean>} - true si tiene credenciales de pago, false si no
+ */
+const checkPaymentsCredential = async (userId) => {
+  try {
+    const paymentCredential = await PaymentCredential.findOne({
+      idConductor: userId,
+    });
+
+    if (!paymentCredential) {
+      console.log(
+        "[payments.checkPaymentsCredential] No se encontraron credenciales de pago"
+      );
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.log(
+      "[payments.checkPaymentsCredential] Error al buscar las credenciales de pago:",
       error
     );
   }

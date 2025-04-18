@@ -11,6 +11,10 @@ const PaymentCredentialsSchema = Schema(
       type: String,
       required: true,
     },
+    refreshToken: {
+      type: String,
+      required: true,
+    },
     provider: {
       type: String,
       required: true,
