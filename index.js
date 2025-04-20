@@ -26,6 +26,7 @@ import ordersRoute from "./routes/orders.js";
 import bidsRoute from "./routes/bids.js";
 import cookieParser from "cookie-parser";
 import conductorRoute from "./routes/authConductor.js";
+import paymentRoute from "./routes/payments.js";
 // import { google } from "googleapis";
 // import admin from "firebase-admin";
 // import serviceAccount from "./firebase-admin.json" with { type: "json" };
@@ -109,6 +110,7 @@ app.use("/api/driver", conductorRoute);
 // Ruta de Bids
 app.use("/api", bidsRoute);
 
+app.use("/api", paymentRoute);
 // Mis Rutas Drivers
 app.use("/api/logindriver", authDriverRoute);
 app.use("/api/drivers", driversRoute);
