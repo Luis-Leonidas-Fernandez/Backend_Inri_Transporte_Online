@@ -1,25 +1,33 @@
 import { Schema, model } from "mongoose";
 
-const PaymentCredentialsSchema = Schema(
+const PaymentsSchema = Schema(
   {
-    idConductor: {
+    idBid: {
       type: Schema.Types.ObjectId,
-      ref: "Conductor",
+      ref: "Bid",
       required: true,
     },
-    accessToken: {
+    paymentId: {
       type: String,
       required: true,
     },
-    refreshToken: {
+    status: {
       type: String,
       required: true,
     },
-    userId: {
+    paymentStatus: {
       type: String,
       required: true,
     },
-    provider: {
+    fee: {
+      type: Number,
+      required: true,
+    },
+    amount: {
+      type: Number,
+      required: true,
+    },
+    currencyId: {
       type: String,
       required: true,
     },
@@ -27,11 +35,11 @@ const PaymentCredentialsSchema = Schema(
   { timestamps: true }
 );
 
-PaymentCredentialsSchema.method("toJSON", function () {
+PaymentsSchema.method("toJSON", function () {
   const { __v, ...object } = this.toObject();
   return object;
 });
 
-const PaymentCredential = model("PaymentCredential", PaymentCredentialsSchema);
+const Payment = model("Payment", PaymentsSchema);
 
-export default PaymentCredential;
+export default Payment;
