@@ -1,7 +1,7 @@
 import { MercadoPagoConfig, Preference } from "mercadopago";
 import fetch from "node-fetch";
 import dotenv from "dotenv";
-import PaymentCredential from "../models/PaymentCredential.js";
+import PaymentCredential from "../models/paymentCredential.js";
 import Payment from "../models/payments.js";
 import Orders from "../models/orders.js";
 import Bids from "../models/bids.js";
