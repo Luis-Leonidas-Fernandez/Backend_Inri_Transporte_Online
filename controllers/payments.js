@@ -6,6 +6,7 @@ import Payment from "../models/payments.js";
 import Orders from "../models/orders.js";
 import Bids from "../models/bids.js";
 import Users from "../models/usuario.js";
+import mongoose from "mongoose";
 
 dotenv.config();
 
@@ -168,7 +169,7 @@ export async function createPreferenceMP(req, res) {
         notification_url: `${REDIRECT_URI}api/payments/webHooks`, // Se guarda la url de notificacion para recibir el webhook
       },
     });
-    
+
     console.log(
       "[payments.createPreferenceMP] URL generada para redireccionar al pago:",
       result.init_point
@@ -360,4 +361,120 @@ const createPaymentDB = async (paymentId, data) => {
       error
     );
   }
+};
+
+export const refundTotal = async (req, res) => {
+  const { bidId } = req.body;
+  if (!bidId) {
+    console.log("[payments.refundTotal] El bidId es obligatorio");
+    return res.status(400).json({ error: "El bidId es obligatorio" });
+  }
+
+  try {
+    if (!isValidMongoId(bidId)) {
+      console.log(
+        "[payments.refundTotal] bidId no es un ObjectId válido de MongoDB"
+      );
+      return res
+        .status(400)
+        .json({ error: "bidId no es un ObjectId válido de MongoDB" });
+    }
+
+    const bid = await Bids.findOne({ _id: bidId });
+    if (!bid) {
+      console.log(
+        "[payments.refundTotal] No se encontro la bid en la base de datos"
+      );
+      return res
+        .status(400)
+        .json({ error: "No se encontro la bid en la base de datos" });
+    }
+
+    const payment = await Payment.find({ idBid: bidId });
+    const paymentId = payment[0].paymentId;
+
+    const paymentCredential = await getPaymentCredentialDB(bid.idConductor); // Se verifica si el usuario ya tiene credenciales de pago
+    // const accessToken = paymentCredential.accessToken;
+
+    const response = await fetch(
+      `https://api.mercadopago.com/v1/payments/${paymentId}/refunds`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Idempotency-Key": bidId,
+          Authorization: `Bearer ${paymentCredential.accessToken}`,
+        },
+      }
+    );
+    const mpResponse = await response.json();
+
+    console.log("[payments.refundTotal] response:", mpResponse);
+    res.status(200).json(mpResponse);
+  } catch (error) {
+    console.log("[payments.refundTotal] Se ha producido un error:", error);
+    res.status(400).json({ error: error });
+  }
+};
+
+export const refundPartial = async (req, res) => {
+  const { bidId } = req.body;
+  if (!bidId) {
+    console.log("[payments.refundPartial] El bidId es obligatorio");
+    return res.status(400).json({ error: "El bidId es obligatorio" });
+  }
+
+  try {
+    if (!isValidMongoId(bidId)) {
+      console.log(
+        "[payments.refundPartial] bidId no es un ObjectId válido de MongoDB"
+      );
+      return res
+        .status(400)
+        .json({ error: "bidId no es un ObjectId válido de MongoDB" });
+    }
+
+    const bid = await Bids.findOne({ _id: bidId });
+    if (!bid) {
+      console.log(
+        "[payments.refundPartial] No se encontro la bid en la base de datos"
+      );
+      return res
+        .status(400)
+        .json({ error: "No se encontro la bid en la base de datos" });
+    }
+
+    const payment = await Payment.find({ idBid: bidId });
+    const paymentId = payment[0].paymentId;
+
+    const paymentCredential = await getPaymentCredentialDB(bid.idConductor); // Se verifica si el usuario ya tiene credenciales de pago
+    // const accessToken = paymentCredential.accessToken;
+
+    const response = await fetch(
+      `https://api.mercadopago.com/v1/payments/${paymentId}/refunds`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Idempotency-Key": bidId,
+          Authorization: `Bearer ${paymentCredential.accessToken}`,
+        },
+        body: {
+          amount: bid.amount / 10, // Reintegrar el 10% como ejemplo
+        },
+      }
+    );
+    const mpResponse = await response.json();
+
+    console.log("[payments.refundPartial] response:", mpResponse);
+    res.status(200).json(mpResponse);
+  } catch (error) {
+    console.log("[payments.refundPartial] Se ha producido un error:", error);
+    res.status(400).json({ error: error });
+  }
+};
+
+/** Verifica que el ID sea compatible con mongoDB */
+export const isValidMongoId = (id) => {
+  return mongoose.Types.ObjectId.isValid(id);
 };
