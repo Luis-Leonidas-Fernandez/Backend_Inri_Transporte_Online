@@ -1,0 +1,21 @@
+services:
+  backend-inri:
+    build: .
+    ports: 
+      - "${SERVER_PORT}:3000"
+    links: 
+      - mongoDB
+
+  mongoDB:
+    image: mongo
+    restart: always
+    environment: 
+      - MONGO_INITDB_ROOT_USERNAME=${DB_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
+    ports: 
+      - "${DB_PORT}:27017"
+    volumes:
+      - mongoDB-data:/data/db
+
+volumes:
+  mongoDB-data:

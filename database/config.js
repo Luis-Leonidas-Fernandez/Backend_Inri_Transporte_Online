@@ -1,4 +1,7 @@
 import mongoose from "mongoose";
+import dotenv from 'dotenv'
+
+dotenv.config();
 
 /**
  * Establece la conexión con la base de datos.
